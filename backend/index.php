@@ -1,8 +1,24 @@
 <?php
 require_once 'assets/db.php';
+require_once 'assets/functions.php';
+session_start();
 
+if (isset($_POST['submit'])) {
+  $username=$_POST['username'];
+  $password=$_POST['password'];
+
+if(login($username, $password)){
+$_SESSION['username'] = $username;
+$_SESSION['password'] = $password;
+    header('Location: meny.php');
+    exit();
+}
+else
+    {
+        echo "Invalid username or password";
+    }
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +27,15 @@ require_once 'assets/db.php';
     <title>Document</title>
 </head>
 <body>
-    <h1>Database Connection Test</h1>
+    <form method="post" action=""> 
+        <label for="username">Username:</label>
+        <input type="text id ="username name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <input type="submit" name="submit" value="Login">
+
+    </form>
 </body>
 </html>
