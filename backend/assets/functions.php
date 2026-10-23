@@ -5,7 +5,7 @@ require_once 'db.php';
 function login($username, $password) {
     global $forum;
 
-    $sql = "SELECT användarnamn, password FROM backenduser WHERE användarnamn = :username";
+    $sql = "SELECT anvandarnamn, password FROM backenduser WHERE anvandarnamn = :username";
     $stmt = $forum->prepare($sql);
     $stmt->bindValue(':username', $username);
     $stmt->execute();
@@ -25,7 +25,7 @@ function login($username, $password) {
     }
 
     $update = $forum->prepare(
-        'UPDATE backenduser SET password = :password WHERE användarnamn = :username'
+        'UPDATE backenduser SET password = :password WHERE anvandarnamn = :username'
     );
     $update->execute([
         'password' => password_hash($password, PASSWORD_DEFAULT),

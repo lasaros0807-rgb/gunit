@@ -6,10 +6,11 @@
     <title>Meny</title>
 </head>
 <body>
-    <h1>Välkommen till menyn</h1>
-    <h3>Databasanvändare</h3>
-    <p><a href="backanv.php">Hantera användare</a></p>
+    <h1>Valkommen till menyn</h1>
+    <h3>Databasanvandare</h3>
+    <p><a href="backanv.php">Hantera anvandare</a></p>
     <h3>Bilar</h3>
     <p><a href="backbil.php">Hantera bilar</a></p>
+    <p><a href="../index.php">Tillbaka till huvudmenyn</a></p>
 </body>
 </html>

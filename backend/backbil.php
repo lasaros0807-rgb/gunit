@@ -3,14 +3,14 @@ $meddelande = '';
 $databasfel = '';
 $bilfel = '';
 $biluppgifter = [
-    'märke' => '',
+    'marke' => '',
     'modell' => '',
-    'årsmodell' => '',
+    'arsmodell' => '',
     'pris' => '',
     'mil' => '',
     'drivmedel' => '',
-    'växellåda' => '',
-    'färg' => '',
+    'vaxellada' => '',
+    'farg' => '',
     'status' => '',
     'bild_url' => '',
 ];
@@ -20,46 +20,46 @@ try {
     require_once 'assets/db.php';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        foreach ($biluppgifter as $fält => $värde) {
-            $biluppgifter[$fält] = trim($_POST[$fält] ?? '');
+        foreach ($biluppgifter as $falt => $varde) {
+            $biluppgifter[$falt] = trim($_POST[$falt] ?? '');
         }
 
-        $obligatoriskaFält = [
-            'märke', 'modell', 'årsmodell', 'pris', 'mil',
-            'drivmedel', 'växellåda', 'färg', 'status',
+        $obligatoriskaFalt = [
+            'marke', 'modell', 'arsmodell', 'pris', 'mil',
+            'drivmedel', 'vaxellada', 'farg', 'status',
         ];
-        $saknarObligatorisktFält = false;
-        foreach ($obligatoriskaFält as $fält) {
-            if ($biluppgifter[$fält] === '') {
-                $saknarObligatorisktFält = true;
+        $saknarObligatorisktFalt = false;
+        foreach ($obligatoriskaFalt as $falt) {
+            if ($biluppgifter[$falt] === '') {
+                $saknarObligatorisktFalt = true;
                 break;
             }
         }
 
-        if ($saknarObligatorisktFält) {
+        if ($saknarObligatorisktFalt) {
             $meddelande = 'Fyll i alla biluppgifter utom bild-URL.';
-        } elseif (!ctype_digit($biluppgifter['årsmodell']) || !is_numeric($biluppgifter['pris']) || !is_numeric($biluppgifter['mil'])) {
-            $meddelande = 'Årsmodell måste vara ett heltal och pris samt mil måste vara numeriska värden.';
+        } elseif (!ctype_digit($biluppgifter['arsmodell']) || !is_numeric($biluppgifter['pris']) || !is_numeric($biluppgifter['mil'])) {
+            $meddelande = 'Arsmodell maste vara ett heltal och pris samt mil maste vara numeriska varden.';
         } else {
             $sparning = $forum->prepare(
-                'INSERT INTO bil (`märke`, `modell`, `årsmodell`, `pris`, `mil`, `drivmedel`, `växellåda`, `färg`, `status`, `bild_url`)
+                'INSERT INTO bil (`marke`, `modell`, `arsmodell`, `pris`, `mil`, `drivmedel`, `vaxellada`, `farg`, `status`, `bild_url`)
                  VALUES (:marke, :modell, :arsmodell, :pris, :mil, :drivmedel, :vaxellada, :farg, :status, :bild_url)'
             );
             $sparning->execute([
-                'marke' => $biluppgifter['märke'],
+                'marke' => $biluppgifter['marke'],
                 'modell' => $biluppgifter['modell'],
-                'arsmodell' => $biluppgifter['årsmodell'],
+                'arsmodell' => $biluppgifter['arsmodell'],
                 'pris' => $biluppgifter['pris'],
                 'mil' => $biluppgifter['mil'],
                 'drivmedel' => $biluppgifter['drivmedel'],
-                'vaxellada' => $biluppgifter['växellåda'],
-                'farg' => $biluppgifter['färg'],
+                'vaxellada' => $biluppgifter['vaxellada'],
+                'farg' => $biluppgifter['farg'],
                 'status' => $biluppgifter['status'],
                 'bild_url' => $biluppgifter['bild_url'],
             ]);
             $meddelande = 'Bilen har skapats.';
-            foreach ($biluppgifter as $fält => $värde) {
-                $biluppgifter[$fält] = '';
+            foreach ($biluppgifter as $falt => $varde) {
+                $biluppgifter[$falt] = '';
             }
         }
     }
@@ -69,13 +69,13 @@ try {
 
 if (isset($forum)) {
     try {
-        $bilfrågor = $forum->query(
-            'SELECT `bil_id`, `märke`, `modell`, `årsmodell`, `pris`, `mil`, `drivmedel`, `växellåda`, `färg`, `status`, `bild_url`
+        $bilfragor = $forum->query(
+            'SELECT `bil_id`, `marke`, `modell`, `arsmodell`, `pris`, `mil`, `drivmedel`, `vaxellada`, `farg`, `status`, `bild_url`
              FROM bil ORDER BY `bil_id` DESC'
         );
-        $bilar = $bilfrågor->fetchAll(PDO::FETCH_ASSOC);
+        $bilar = $bilfragor->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $fel) {
-        $bilfel = 'Kunde inte läsa bilarna från databasen: ' . $fel->getMessage();
+        $bilfel = 'Kunde inte lasa bilarna fran databasen: ' . $fel->getMessage();
     }
 }
 ?>
@@ -98,14 +98,14 @@ if (isset($forum)) {
         <p><?= htmlspecialchars($bilfel, ENT_QUOTES, 'UTF-8') ?></p>
     <?php endif; ?>
     <form method="post" action="">
-        <label for="märke">Märke:</label>
-        <input type="text" id="märke" name="märke" value="<?= htmlspecialchars($biluppgifter['märke'], ENT_QUOTES, 'UTF-8') ?>" required>
+        <label for="marke">Marke:</label>
+        <input type="text" id="marke" name="marke" value="<?= htmlspecialchars($biluppgifter['marke'], ENT_QUOTES, 'UTF-8') ?>" required>
         <br>
         <label for="modell">Modell:</label>
         <input type="text" id="modell" name="modell" value="<?= htmlspecialchars($biluppgifter['modell'], ENT_QUOTES, 'UTF-8') ?>" required>
         <br>
-        <label for="årsmodell">Årsmodell:</label>
-        <input type="number" id="årsmodell" name="årsmodell" step="1" value="<?= htmlspecialchars($biluppgifter['årsmodell'], ENT_QUOTES, 'UTF-8') ?>" required>
+        <label for="arsmodell">Arsmodell:</label>
+        <input type="number" id="arsmodell" name="arsmodell" step="1" value="<?= htmlspecialchars($biluppgifter['arsmodell'], ENT_QUOTES, 'UTF-8') ?>" required>
         <br>
         <label for="pris">Pris:</label>
         <input type="number" id="pris" name="pris" step="any" value="<?= htmlspecialchars($biluppgifter['pris'], ENT_QUOTES, 'UTF-8') ?>" required>
@@ -116,11 +116,11 @@ if (isset($forum)) {
         <label for="drivmedel">Drivmedel:</label>
         <input type="text" id="drivmedel" name="drivmedel" value="<?= htmlspecialchars($biluppgifter['drivmedel'], ENT_QUOTES, 'UTF-8') ?>" required>
         <br>
-        <label for="växellåda">Växellåda:</label>
-        <input type="text" id="växellåda" name="växellåda" value="<?= htmlspecialchars($biluppgifter['växellåda'], ENT_QUOTES, 'UTF-8') ?>" required>
+        <label for="vaxellada">Vaxellada:</label>
+        <input type="text" id="vaxellada" name="vaxellada" value="<?= htmlspecialchars($biluppgifter['vaxellada'], ENT_QUOTES, 'UTF-8') ?>" required>
         <br>
-        <label for="färg">Färg:</label>
-        <input type="text" id="färg" name="färg" value="<?= htmlspecialchars($biluppgifter['färg'], ENT_QUOTES, 'UTF-8') ?>" required>
+        <label for="farg">Farg:</label>
+        <input type="text" id="farg" name="farg" value="<?= htmlspecialchars($biluppgifter['farg'], ENT_QUOTES, 'UTF-8') ?>" required>
         <br>
         <label for="status">Status:</label>
         <input type="text" id="status" name="status" value="<?= htmlspecialchars($biluppgifter['status'], ENT_QUOTES, 'UTF-8') ?>" required>
@@ -137,14 +137,14 @@ if (isset($forum)) {
             <thead>
                 <tr>
                     <th scope="col">Bil-ID</th>
-                    <th scope="col">Märke</th>
+                    <th scope="col">Marke</th>
                     <th scope="col">Modell</th>
-                    <th scope="col">Årsmodell</th>
+                    <th scope="col">Arsmodell</th>
                     <th scope="col">Pris</th>
                     <th scope="col">Mil</th>
                     <th scope="col">Drivmedel</th>
-                    <th scope="col">Växellåda</th>
-                    <th scope="col">Färg</th>
+                    <th scope="col">Vaxellada</th>
+                    <th scope="col">Farg</th>
                     <th scope="col">Status</th>
                     <th scope="col">Bild-URL</th>
                 </tr>
@@ -152,7 +152,7 @@ if (isset($forum)) {
             <tbody>
                 <?php foreach ($bilar as $bil): ?>
                     <tr>
-                        <?php foreach (['bil_id', 'märke', 'modell', 'årsmodell', 'pris', 'mil', 'drivmedel', 'växellåda', 'färg', 'status', 'bild_url'] as $kolumn): ?>
+                        <?php foreach (['bil_id', 'marke', 'modell', 'arsmodell', 'pris', 'mil', 'drivmedel', 'vaxellada', 'farg', 'status', 'bild_url'] as $kolumn): ?>
                             <td><?= htmlspecialchars((string) ($bil[$kolumn] ?? ''), ENT_QUOTES, 'UTF-8') ?></td>
                         <?php endforeach; ?>
                     </tr>
@@ -160,7 +160,7 @@ if (isset($forum)) {
             </tbody>
         </table>
     <?php else: ?>
-        <p>Det finns inga bilar i databasen ännu.</p>
+        <p>Det finns inga bilar i databasen annu.</p>
     <?php endif; ?>
     <p><a href="meny.php">Tillbaka till menyn</a></p>
 </body>

@@ -4,7 +4,7 @@ session_start();
 
 // Kontrollerar om sessionsvariabel existerar
 if (!isset($_SESSION['username'])) {
-    // Skickar en användare till startsidan
+    // Skickar en anvandare till startsidan
     header('Location: login.php');
     exit();
 }
