@@ -8,7 +8,7 @@
 <body>
     <h1>Valkommen till menyn</h1>
     <h3>Databasanvandare</h3>
-    <p><a href="backanv.php">Hantera anvandare</a></p>
+    <p><a href="backanv.php">Backendanvandare</a></p>
     <h3>Bilar</h3>
     <p><a href="backbil.php">Hantera bilar</a></p>
     <p><a href="../index.php">Tillbaka till huvudmenyn</a></p>

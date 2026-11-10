@@ -32,7 +32,7 @@ try {
                     'name' => $name,
                     'password' => password_hash($password, PASSWORD_DEFAULT),
                 ]);
-                $message = 'Anvandaren har skapats.';
+                $message = 'Backendanvandaren har skapats.';
                 $username = '';
                 $name = '';
             }
@@ -43,7 +43,7 @@ try {
         $databaseError = 'Losenordskolumnen ar for kort for losenordets sakra hash. Andra kolumnen i databasen och forsok igen.';
         $passwordColumnTooShort = true;
     } else {
-        $databaseError = 'Databasfel vid skapande av anvandare: ' . $e->getMessage();
+        $databaseError = 'Databasfel vid skapande av backendanvandare: ' . $e->getMessage();
     }
 }
 
@@ -54,7 +54,7 @@ if (isset($forum)) {
         );
         $users = $usersStatement->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        $usersError = 'Kunde inte lasa anvandarna fran databasen: ' . $e->getMessage();
+        $usersError = 'Kunde inte lasa backendanvandarna fran databasen: ' . $e->getMessage();
     }
 }
 ?>
@@ -63,17 +63,17 @@ if (isset($forum)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hantera anvandare</title>
+    <title>Hantera backendanvandare</title>
 </head>
 <body>
-    <h1>Hantera anvandare</h1>
+    <h1>Hantera backendanvandare</h1>
     <?php if ($message !== ''): ?>
         <p><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></p>
     <?php endif; ?>
     <?php if ($databaseError !== ''): ?>
         <p>Databasfel: <?= htmlspecialchars($databaseError, ENT_QUOTES, 'UTF-8') ?></p>
         <?php if ($passwordColumnTooShort): ?>
-            <p>Kor foljande SQL i databasen och forsok sedan skapa anvandaren igen:</p>
+            <p>Kor foljande SQL i databasen och forsok sedan skapa backendanvandaren igen:</p>
             <pre><code>ALTER TABLE backenduser MODIFY password VARCHAR(255);</code></pre>
         <?php endif; ?>
     <?php endif; ?>
@@ -90,9 +90,9 @@ if (isset($forum)) {
         <label for="password">Losenord:</label>
         <input type="password" id="password" name="password" autocomplete="new-password" required>
         <br>
-        <button type="submit">Skapa anvandare</button>
+        <button type="submit">Skapa backendanvandare</button>
     </form>
-    <h2>Skapade anvandare</h2>
+    <h2>Skapade backendanvandare</h2>
     <?php if (count($users) > 0): ?>
         <table>
             <thead>
@@ -111,7 +111,7 @@ if (isset($forum)) {
             </tbody>
         </table>
     <?php else: ?>
-        <p>Det finns inga anvandare annu.</p>
+        <p>Det finns inga backendanvandare annu.</p>
     <?php endif; ?>
     <p><a href="meny.php">Tillbaka till menyn</a></p>
 </body>
