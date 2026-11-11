@@ -122,12 +122,18 @@ $bilFaltTyper = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hantera bilar</title>
     <style>
-        .bil-lista { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1rem; }
-        .bil-box { border: 1px solid #999; padding: 1rem; }
-        .bil-falt { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: 0.75rem; }
+        .bil-lista { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+        .bil-box { min-width: 0; border: 1px solid #999; padding: 0.75rem; }
+        .bil-falt { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
         .bil-falt label { display: block; margin-bottom: 0.25rem; }
         .bil-falt input { box-sizing: border-box; width: 100%; }
         .bil-box button { margin-top: 1rem; }
+        @media (max-width: 900px) {
+            .bil-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 600px) {
+            .bil-lista, .bil-falt { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>

@@ -1,60 +1,60 @@
 <?php
-$message = '';
-$databaseError = '';
-$passwordColumnTooShort = false;
-$usersError = '';
-$username = '';
-$name = '';
-$users = [];
+$meddelande = '';
+$databasfel = '';
+$losenordskolumnForKort = false;
+$anvandarfel = '';
+$anvandarnamn = '';
+$namn = '';
+$anvandare = [];
 
 try {
     require_once 'assets/db.php';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $username = trim($_POST['username'] ?? '');
-        $name = trim($_POST['name'] ?? '');
-        $password = $_POST['password'] ?? '';
+        $anvandarnamn = trim($_POST['username'] ?? '');
+        $namn = trim($_POST['name'] ?? '');
+        $losenord = $_POST['password'] ?? '';
 
-        if ($username === '' || $name === '' || $password === '') {
-            $message = 'Fyll i anvandarnamn, namn och losenord.';
+        if ($anvandarnamn === '' || $namn === '' || $losenord === '') {
+            $meddelande = 'Fyll i anvandarnamn, namn och losenord.';
         } else {
-            $check = $forum->prepare('SELECT 1 FROM backenduser WHERE anvandarnamn = :username');
-            $check->execute(['username' => $username]);
+            $kontroll = $forum->prepare('SELECT 1 FROM backenduser WHERE anvandarnamn = :anvandarnamn');
+            $kontroll->execute(['anvandarnamn' => $anvandarnamn]);
 
-            if ($check->fetchColumn()) {
-                $message = 'Anvandarnamnet anvands redan.';
+            if ($kontroll->fetchColumn()) {
+                $meddelande = 'Anvandarnamnet anvands redan.';
             } else {
-                $insert = $forum->prepare(
-                    'INSERT INTO backenduser (anvandarnamn, namn, password) VALUES (:username, :name, :password)'
+                $sparning = $forum->prepare(
+                    'INSERT INTO backenduser (anvandarnamn, namn, password) VALUES (:anvandarnamn, :namn, :losenord)'
                 );
-                $insert->execute([
-                    'username' => $username,
-                    'name' => $name,
-                    'password' => password_hash($password, PASSWORD_DEFAULT),
+                $sparning->execute([
+                    'anvandarnamn' => $anvandarnamn,
+                    'namn' => $namn,
+                    'losenord' => password_hash($losenord, PASSWORD_DEFAULT),
                 ]);
-                $message = 'Backendanvandaren har skapats.';
-                $username = '';
-                $name = '';
+                $meddelande = 'Backendanvandaren har skapats.';
+                $anvandarnamn = '';
+                $namn = '';
             }
         }
     }
 } catch (PDOException $e) {
     if ($e->getCode() === '22001') {
-        $databaseError = 'Losenordskolumnen ar for kort for losenordets sakra hash. Andra kolumnen i databasen och forsok igen.';
-        $passwordColumnTooShort = true;
+        $databasfel = 'Losenordskolumnen ar for kort for losenordets sakra hash. Andra kolumnen i databasen och forsok igen.';
+        $losenordskolumnForKort = true;
     } else {
-        $databaseError = 'Databasfel vid skapande av backendanvandare: ' . $e->getMessage();
+        $databasfel = 'Databasfel vid skapande av backendanvandare: ' . $e->getMessage();
     }
 }
 
 if (isset($forum)) {
     try {
-        $usersStatement = $forum->query(
+        $anvandarfragor = $forum->query(
             'SELECT anvandarnamn, namn FROM backenduser ORDER BY anvandarnamn'
         );
-        $users = $usersStatement->fetchAll(PDO::FETCH_ASSOC);
+        $anvandare = $anvandarfragor->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        $usersError = 'Kunde inte lasa backendanvandarna fran databasen: ' . $e->getMessage();
+        $anvandarfel = 'Kunde inte lasa backendanvandarna fran databasen: ' . $e->getMessage();
     }
 }
 ?>
@@ -67,25 +67,25 @@ if (isset($forum)) {
 </head>
 <body>
     <h1>Hantera backendanvandare</h1>
-    <?php if ($message !== ''): ?>
-        <p><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></p>
+    <?php if ($meddelande !== ''): ?>
+        <p><?= htmlspecialchars($meddelande, ENT_QUOTES, 'UTF-8') ?></p>
     <?php endif; ?>
-    <?php if ($databaseError !== ''): ?>
-        <p>Databasfel: <?= htmlspecialchars($databaseError, ENT_QUOTES, 'UTF-8') ?></p>
-        <?php if ($passwordColumnTooShort): ?>
+    <?php if ($databasfel !== ''): ?>
+        <p>Databasfel: <?= htmlspecialchars($databasfel, ENT_QUOTES, 'UTF-8') ?></p>
+        <?php if ($losenordskolumnForKort): ?>
             <p>Kor foljande SQL i databasen och forsok sedan skapa backendanvandaren igen:</p>
             <pre><code>ALTER TABLE backenduser MODIFY password VARCHAR(255);</code></pre>
         <?php endif; ?>
     <?php endif; ?>
-    <?php if ($usersError !== ''): ?>
-        <p><?= htmlspecialchars($usersError, ENT_QUOTES, 'UTF-8') ?></p>
+    <?php if ($anvandarfel !== ''): ?>
+        <p><?= htmlspecialchars($anvandarfel, ENT_QUOTES, 'UTF-8') ?></p>
     <?php endif; ?>
     <form method="post" action="">
         <label for="username">Anvandarnamn:</label>
-        <input type="text" id="username" name="username" value="<?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?>" required>
+        <input type="text" id="username" name="username" value="<?= htmlspecialchars($anvandarnamn, ENT_QUOTES, 'UTF-8') ?>" required>
         <br>
         <label for="name">Namn:</label>
-        <input type="text" id="name" name="name" value="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" required>
+        <input type="text" id="name" name="name" value="<?= htmlspecialchars($namn, ENT_QUOTES, 'UTF-8') ?>" required>
         <br>
         <label for="password">Losenord:</label>
         <input type="password" id="password" name="password" autocomplete="new-password" required>
@@ -93,7 +93,7 @@ if (isset($forum)) {
         <button type="submit">Skapa backendanvandare</button>
     </form>
     <h2>Skapade backendanvandare</h2>
-    <?php if (count($users) > 0): ?>
+    <?php if (count($anvandare) > 0): ?>
         <table>
             <thead>
                 <tr>
@@ -102,10 +102,10 @@ if (isset($forum)) {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($users as $user): ?>
+                <?php foreach ($anvandare as $enAnvandare): ?>
                     <tr>
-                        <td><?= htmlspecialchars($user['anvandarnamn'], ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= htmlspecialchars($user['namn'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= htmlspecialchars($enAnvandare['anvandarnamn'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= htmlspecialchars($enAnvandare['namn'], ENT_QUOTES, 'UTF-8') ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
