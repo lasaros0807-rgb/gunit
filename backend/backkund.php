@@ -112,20 +112,6 @@ $kundFaltTyper = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hantera kunder</title>
-    <style>
-        .kund-lista { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
-        .kund-box { min-width: 0; border: 1px solid #999; padding: 0.75rem; }
-        .kund-falt { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
-        .kund-falt label { display: block; margin-bottom: 0.25rem; }
-        .kund-falt input { box-sizing: border-box; width: 100%; }
-        .kund-box button { margin-top: 1rem; }
-        @media (max-width: 900px) {
-            .kund-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        }
-        @media (max-width: 600px) {
-            .kund-lista, .kund-falt { grid-template-columns: 1fr; }
-        }
-    </style>
 </head>
 <body>
     <h1>Hantera kunder</h1>
