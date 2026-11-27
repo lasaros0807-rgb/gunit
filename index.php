@@ -1,7 +1,4 @@
 <?php
-require_once 'backend/assets/db.php';
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">

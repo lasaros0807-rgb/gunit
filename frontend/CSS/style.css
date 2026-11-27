@@ -46,6 +46,26 @@
     transition: color 300ms ease;
 }
 
+.home {
+    margin: 4rem auto;
+    max-width: 700px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.home__actions {
+    margin-top: 1.5rem;
+}
+
+.home__button {
+    display: inline-block;
+    background-color: #1f2937;
+    color: #ffffff;
+    margin: 0.3rem;
+    padding: 0.7rem 1rem;
+    text-decoration: none;
+}
+
 .calculator {
     max-width: 640px;
     margin: 2rem auto;
