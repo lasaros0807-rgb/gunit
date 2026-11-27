@@ -1,11 +1,16 @@
 <?php
 $meddelande = '';
 $databasfel = '';
-$losenordskolumnForKort = false;
 $anvandarfel = '';
+$losenordskolumnForKort = false;
 $anvandarnamn = '';
 $namn = '';
 $anvandare = [];
+
+function skrivSaker($text)
+{
+    echo htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
+}
 
 try {
     require_once 'assets/db.php';
@@ -18,14 +23,17 @@ try {
         if ($anvandarnamn === '' || $namn === '' || $losenord === '') {
             $meddelande = 'Fyll i anvandarnamn, namn och losenord.';
         } else {
-            $kontroll = $forum->prepare('SELECT 1 FROM backenduser WHERE anvandarnamn = :anvandarnamn');
+            $kontroll = $forum->prepare(
+                'SELECT 1 FROM backenduser WHERE anvandarnamn = :anvandarnamn'
+            );
             $kontroll->execute(['anvandarnamn' => $anvandarnamn]);
 
             if ($kontroll->fetchColumn()) {
                 $meddelande = 'Anvandarnamnet anvands redan.';
             } else {
                 $sparning = $forum->prepare(
-                    'INSERT INTO backenduser (anvandarnamn, namn, password) VALUES (:anvandarnamn, :namn, :losenord)'
+                    'INSERT INTO backenduser (anvandarnamn, namn, password)
+                     VALUES (:anvandarnamn, :namn, :losenord)'
                 );
                 $sparning->execute([
                     'anvandarnamn' => $anvandarnamn,
@@ -38,12 +46,12 @@ try {
             }
         }
     }
-} catch (PDOException $e) {
-    if ($e->getCode() === '22001') {
-        $databasfel = 'Losenordskolumnen ar for kort for losenordets sakra hash. Andra kolumnen i databasen och forsok igen.';
+} catch (PDOException $fel) {
+    if ($fel->getCode() === '22001') {
+        $databasfel = 'Losenordskolumnen ar for kort. Andra den till VARCHAR(255) i databasen.';
         $losenordskolumnForKort = true;
     } else {
-        $databasfel = 'Databasfel vid skapande av backendanvandare: ' . $e->getMessage();
+        $databasfel = 'Databasfel vid skapande av backendanvandare: ' . $fel->getMessage();
     }
 }
 
@@ -53,8 +61,8 @@ if (isset($forum)) {
             'SELECT anvandarnamn, namn FROM backenduser ORDER BY anvandarnamn'
         );
         $anvandare = $anvandarfragor->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        $anvandarfel = 'Kunde inte lasa backendanvandarna fran databasen: ' . $e->getMessage();
+    } catch (PDOException $fel) {
+        $anvandarfel = 'Kunde inte lasa backendanvandarna fran databasen: ' . $fel->getMessage();
     }
 }
 ?>
@@ -67,31 +75,36 @@ if (isset($forum)) {
 </head>
 <body>
     <h1>Hantera backendanvandare</h1>
+
     <?php if ($meddelande !== ''): ?>
-        <p><?= htmlspecialchars($meddelande, ENT_QUOTES, 'UTF-8') ?></p>
+        <p><?php skrivSaker($meddelande); ?></p>
     <?php endif; ?>
     <?php if ($databasfel !== ''): ?>
-        <p>Databasfel: <?= htmlspecialchars($databasfel, ENT_QUOTES, 'UTF-8') ?></p>
+        <p><?php skrivSaker($databasfel); ?></p>
         <?php if ($losenordskolumnForKort): ?>
-            <p>Kor foljande SQL i databasen och forsok sedan skapa backendanvandaren igen:</p>
             <pre><code>ALTER TABLE backenduser MODIFY password VARCHAR(255);</code></pre>
         <?php endif; ?>
     <?php endif; ?>
     <?php if ($anvandarfel !== ''): ?>
-        <p><?= htmlspecialchars($anvandarfel, ENT_QUOTES, 'UTF-8') ?></p>
+        <p><?php skrivSaker($anvandarfel); ?></p>
     <?php endif; ?>
+
     <form method="post" action="">
         <label for="username">Anvandarnamn:</label>
-        <input type="text" id="username" name="username" value="<?= htmlspecialchars($anvandarnamn, ENT_QUOTES, 'UTF-8') ?>" required>
+        <input type="text" id="username" name="username" value="<?php skrivSaker($anvandarnamn); ?>" required>
         <br>
+
         <label for="name">Namn:</label>
-        <input type="text" id="name" name="name" value="<?= htmlspecialchars($namn, ENT_QUOTES, 'UTF-8') ?>" required>
+        <input type="text" id="name" name="name" value="<?php skrivSaker($namn); ?>" required>
         <br>
+
         <label for="password">Losenord:</label>
         <input type="password" id="password" name="password" autocomplete="new-password" required>
         <br>
+
         <button type="submit">Skapa backendanvandare</button>
     </form>
+
     <h2>Skapade backendanvandare</h2>
     <?php if (count($anvandare) > 0): ?>
         <table>
@@ -104,8 +117,8 @@ if (isset($forum)) {
             <tbody>
                 <?php foreach ($anvandare as $enAnvandare): ?>
                     <tr>
-                        <td><?= htmlspecialchars($enAnvandare['anvandarnamn'], ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= htmlspecialchars($enAnvandare['namn'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?php skrivSaker($enAnvandare['anvandarnamn']); ?></td>
+                        <td><?php skrivSaker($enAnvandare['namn']); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -113,6 +126,7 @@ if (isset($forum)) {
     <?php else: ?>
         <p>Det finns inga backendanvandare annu.</p>
     <?php endif; ?>
+
     <p><a href="meny.php">Tillbaka till menyn</a></p>
 </body>
 </html>
